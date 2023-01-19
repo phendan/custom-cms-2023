@@ -1,5 +1,15 @@
 <h1>Login</h1>
 
+<?php
+
+if (isset($data['errors'])) {
+    foreach ($data['errors'] as $fieldErrors) {
+        echo '<div>' . $fieldErrors[0] . '</div>';
+    }
+}
+
+?>
+
 <form action="index.php?url=login" method="post">
     <div>
         <label for="username">Username</label>

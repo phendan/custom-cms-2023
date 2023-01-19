@@ -3,6 +3,6 @@
 class HomeController {
     public function index()
     {
-        echo 'Home';
+        dd($_SESSION);
     }
 }
