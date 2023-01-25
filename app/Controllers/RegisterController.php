@@ -8,11 +8,11 @@ use App\Models\Database;
 use App\Models\User;
 use Exception;
 
-class LoginController extends BaseController {
+class RegisterController extends BaseController {
     public function index()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $this->view->render('login/index');
+            $this->view->render('register/index');
             return;
         }
 
@@ -23,13 +23,19 @@ class LoginController extends BaseController {
 
         $validation->setRules([
             'username' => 'required|min:3|max:64',
+            'email' => 'required|email',
             'password' => 'required|min:6',
+            'passwordAgain' => 'required|matches:password'
+        ]);
+
+        $validation->setMessages([
+            'passwordAgain.matches' => "You didn't repeat the password correctly."
         ]);
 
         $validation->validate();
 
         if ($validation->fails()) {
-            $this->view->render('login/index', [
+            $this->view->render('register/index', [
                 'errors' => $validation->getErrors()
             ]);
         }
@@ -38,7 +44,11 @@ class LoginController extends BaseController {
         $db = new Database;
         $user = new User($db);
         try {
-            $user->login($formInput['username'], $formInput['password']);
+            $user->register(
+                $formInput['username'],
+                $formInput['email'],
+                $formInput['password']
+            );
             header('Location: /');
         } catch (Exception $e) {
             $this->view->render('login/index', [

@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'View.php';
+namespace App;
+
+use App\View;
 
 class BaseController {
     protected View $view;

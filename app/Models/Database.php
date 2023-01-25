@@ -1,5 +1,11 @@
 <?php
 
+namespace App\Models;
+
+use PDO;
+use PDOStatement;
+use PDOException;
+
 class Database {
     private string $host = 'localhost';
     private string $databaseName = 'forum';

@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Models;
+
+use App\Models\Database;
+use Exception;
+
 class User {
     private Database $db;
     private string $id;
@@ -18,7 +23,8 @@ class User {
     // If they were, saves their information in object's properties
     public function find(int|string $identifier): bool
     {
-        $sql = "SELECT * FROM `users` WHERE `username` = :identifier";
+        $column = is_int($identifier) ? 'id' : 'username';
+        $sql = "SELECT * FROM `users` WHERE `{$column}` = :identifier";
         $this->db->query($sql, [ 'identifier' => $identifier ]);
 
         if (!$this->db->count()) {
@@ -34,13 +40,13 @@ class User {
         return true;
     }
 
-    public function register(string $username, string $email, string $password)
+    public function register(string $username, string $email, string $password): void
     {
         //
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
     }
 
-    public function login(string $username, string $password)
+    public function login(string $username, string $password): void
     {
         // Abgleich mit DB
         // Versuchen User zu finden
@@ -55,5 +61,29 @@ class User {
 
         // Session erstellen
         $_SESSION['userId'] = (int) $this->id;
+    }
+
+    public function logout(): void
+    {
+        unset($_SESSION['userId']);
+    }
+
+    public function isLoggedIn(): bool
+    {
+        return isset($_SESSION['userId']);
+    }
+
+    public function getId(): int
+    {
+        if (isset($this->id)) {
+            return (int) $this->id;
+        }
+
+        return $_SESSION['userId'];
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
     }
 }

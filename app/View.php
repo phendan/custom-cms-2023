@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 class View {
     public function render(string $view, array $data = [])
     {
