@@ -16,7 +16,10 @@ class App {
         $params = $router->getParams();
 
         $controller = new $requestedController;
-        $controller->{$requestedMethod}(...$params);
+
+        $request = new Request($params);
+
+        $controller->{$requestedMethod}($request);
     }
 
     private function autoloadClasses()

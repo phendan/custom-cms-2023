@@ -34,6 +34,8 @@ class Database {
     {
         $this->statement = $this->pdo->prepare($sql);
         $this->statement->execute($values);
+
+        return $this;
     }
 
     public function count(): int

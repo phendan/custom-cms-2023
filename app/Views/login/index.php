@@ -4,8 +4,8 @@
     <div>
         <label for="username">Username</label>
 
-        <?php if (isset($data['errors']['username'])): ?>
-            <div class="error"><?= $data['errors']['username'][0] ?></div>
+        <?php if (isset($errors['username'])): ?>
+            <div class="error"><?= $errors['username'][0] ?></div>
         <?php endif; ?>
 
         <input type="text" name="username" id="username" placeholder="Your Handle" />
@@ -13,8 +13,8 @@
     <div>
         <label for="password">Password</label>
 
-        <?php if (isset($data['errors']['password'])): ?>
-            <div class="error"><?= $data['errors']['password'][0] ?></div>
+        <?php if (isset($errors['password'])): ?>
+            <div class="error"><?= $errors['password'][0] ?></div>
         <?php endif; ?>
 
         <input type="password" name="password" id="password" />

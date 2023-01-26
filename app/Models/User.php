@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Database;
 use Exception;
+use App\Helpers\Session;
 
 class User {
     private Database $db;
@@ -12,7 +13,6 @@ class User {
     private string $email;
     private string $password;
     private string $joinedAt;
-
 
     public function __construct(Database $db)
     {
@@ -25,13 +25,13 @@ class User {
     {
         $column = is_int($identifier) ? 'id' : 'username';
         $sql = "SELECT * FROM `users` WHERE `{$column}` = :identifier";
-        $this->db->query($sql, [ 'identifier' => $identifier ]);
+        $userQuery = $this->db->query($sql, [ 'identifier' => $identifier ]);
 
-        if (!$this->db->count()) {
+        if (!$userQuery->count()) {
             return false;
         }
 
-        $userData = $this->db->results()[0];
+        $userData = $userQuery->results()[0];
 
         foreach ($userData as $column => $value) {
             $this->{$column} = $value;
@@ -42,8 +42,20 @@ class User {
 
     public function register(string $username, string $email, string $password): void
     {
-        //
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT, [ 'cost' => 10 ]);
+
+        $sql = "
+            INSERT INTO `users`
+            (`username`, `email`, `password`, `joined_at`)
+            VALUES (:username, :email, :password, :joinedAt)
+        ";
+
+        $this->db->query($sql, [
+            'username' => $username,
+            'email' => $email,
+            'password' => $passwordHash,
+            'joinedAt' => time()
+        ]);
     }
 
     public function login(string $username, string $password): void
@@ -60,17 +72,17 @@ class User {
         }
 
         // Session erstellen
-        $_SESSION['userId'] = (int) $this->id;
+        Session::set('userId', (int) $this->id);
     }
 
     public function logout(): void
     {
-        unset($_SESSION['userId']);
+        Session::delete('userId');
     }
 
     public function isLoggedIn(): bool
     {
-        return isset($_SESSION['userId']);
+        return Session::exists('userId');
     }
 
     public function getId(): int
@@ -79,7 +91,7 @@ class User {
             return (int) $this->id;
         }
 
-        return $_SESSION['userId'];
+        return Session::get('userId');
     }
 
     public function getUsername(): string

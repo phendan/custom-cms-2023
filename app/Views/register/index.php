@@ -2,8 +2,8 @@
 
 <?php
 
-if (isset($data['errors'])) {
-    foreach ($data['errors'] as $fieldErrors) {
+if (isset($errors)) {
+    foreach ($errors as $fieldErrors) {
         echo '<div>' . $fieldErrors[0] . '</div>';
     }
 }

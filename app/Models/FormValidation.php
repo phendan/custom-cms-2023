@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use Exception;
 
 class FormValidation {
+    private Database $db;
     private array $formInput;
     private array $rules;
     private array $errors = [];
     private array $messages = [];
 
-    public function __construct(array $formInput)
+    public function __construct(array $formInput, Database $db)
     {
+        $this->db = $db;
         $this->formInput = $formInput;
     }
 
@@ -127,6 +130,17 @@ class FormValidation {
     {
         if ($this->formInput[$field] !== $this->formInput[$satisfier]) {
             throw new Exception("The {$field} field must match the {$satisfier} field.");
+        }
+    }
+
+    private function available(string $field, string $satisfier)
+    {
+        $sql = "SELECT 1 FROM `{$satisfier}` WHERE `{$field}` = :field";
+
+        $this->db->query($sql, [ 'field' => $this->formInput[$field] ]);
+
+        if ($this->db->count() > 0) {
+            throw new Exception("The {$field} is already taken.");
         }
     }
 }

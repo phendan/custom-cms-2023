@@ -6,24 +6,30 @@ use App\BaseController;
 use App\Models\FormValidation;
 use App\Models\Database;
 use App\Models\User;
+use App\Helpers\Session;
 use Exception;
+use App\Request;
 
 class RegisterController extends BaseController {
-    public function index()
+    public function index(Request $request)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        if ($this->user->isLoggedIn()) {
+            $this->redirectTo('/');
+        }
+
+        if ($request->getMethod() === 'GET') {
             $this->view->render('register/index');
             return;
         }
 
         // POST
         // Input Validieren
-        $formInput = $_POST;
-        $validation = new FormValidation($formInput);
+        $formInput = $request->getInput('post');
+        $validation = new FormValidation($formInput, $this->db);
 
         $validation->setRules([
-            'username' => 'required|min:3|max:64',
-            'email' => 'required|email',
+            'username' => 'required|min:3|max:64|available:users',
+            'email' => 'required|email|available:users',
             'password' => 'required|min:6',
             'passwordAgain' => 'required|matches:password'
         ]);
@@ -41,15 +47,14 @@ class RegisterController extends BaseController {
         }
 
         // User Einloggen
-        $db = new Database;
-        $user = new User($db);
         try {
-            $user->register(
+            $this->user->register(
                 $formInput['username'],
                 $formInput['email'],
                 $formInput['password']
             );
-            header('Location: /');
+            Session::flash('success', 'Your account has been created. Please sign in.');
+            $this->redirectTo('/login');
         } catch (Exception $e) {
             $this->view->render('login/index', [
                 'errors' => [

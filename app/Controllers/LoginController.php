@@ -3,23 +3,29 @@
 namespace App\Controllers;
 
 use App\BaseController;
+use App\Helpers\Session;
 use App\Models\FormValidation;
 use App\Models\Database;
 use App\Models\User;
 use Exception;
+use App\Request;
 
 class LoginController extends BaseController {
-    public function index()
+    public function index(Request $request)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        if ($this->user->isLoggedIn()) {
+            $this->redirectTo('/');
+        }
+
+        if ($request->getMethod() === 'GET') {
             $this->view->render('login/index');
             return;
         }
 
         // POST
         // Input Validieren
-        $formInput = $_POST;
-        $validation = new FormValidation($formInput);
+        $formInput = $request->getInput('post');
+        $validation = new FormValidation($formInput, $this->db);
 
         $validation->setRules([
             'username' => 'required|min:3|max:64',
@@ -35,11 +41,10 @@ class LoginController extends BaseController {
         }
 
         // User Einloggen
-        $db = new Database;
-        $user = new User($db);
         try {
-            $user->login($formInput['username'], $formInput['password']);
-            header('Location: /');
+            $this->user->login($formInput['username'], $formInput['password']);
+            Session::flash('success', 'You have been successfully signed in.');
+            $this->redirectTo('/dashboard');
         } catch (Exception $e) {
             $this->view->render('login/index', [
                 'errors' => [

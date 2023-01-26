@@ -9,15 +9,12 @@ use App\Models\User;
 class HomeController extends BaseController {
     public function index()
     {
-        $db = new Database;
-        $user = new User($db);
-
-        if ($user->isLoggedIn()) {
-            $user->find($user->getId());
+        if ($this->user->isLoggedIn()) {
+            $this->user->find($this->user->getId());
         }
 
         $this->view->render('home/index', [
-            'user' => $user
+            'user' => $this->user
         ]);
     }
 }
