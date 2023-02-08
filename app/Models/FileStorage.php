@@ -33,8 +33,8 @@ class FileStorage {
         }
     }
 
-    public function delete(string $path)
+    public static function delete(string $path): bool
     {
-        //
+        return unlink(ltrim($path, DIRECTORY_SEPARATOR));
     }
 }

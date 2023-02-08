@@ -98,4 +98,23 @@ class User {
     {
         return $this->username;
     }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getPosts(): array
+    {
+        $sql = "SELECT * FROM `posts` WHERE `user_id` = :userId";
+        $postsQuery = $this->db->query($sql, [ 'userId' => $this->getId() ]);
+
+        $posts = [];
+
+        foreach ($postsQuery->results() as $result) {
+            $posts[] = new Post($this->db, $result);
+        }
+
+        return $posts;
+    }
 }

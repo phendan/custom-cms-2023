@@ -27,3 +27,7 @@
     <div class="messages">
         <?php echo $session::flash('success'); ?>
     </div>
+
+    <div class="messages error">
+        <?php echo $session::flash('error'); ?>
+    </div>
