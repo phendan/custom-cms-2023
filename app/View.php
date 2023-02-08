@@ -13,8 +13,10 @@ class View {
         $this->user = $user;
     }
 
-    public function render(string $view, array $data = [])
+    public function render(string $view, array $data = [], int $statusCode = 200)
     {
+        http_response_code($statusCode);
+
         $user = $this->user;
         $session = Session::class;
 

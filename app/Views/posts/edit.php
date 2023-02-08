@@ -1,6 +1,6 @@
-<h1>Write Your Post</h1>
+<h1>Edit Post</h1>
 
-<form action="post/create" method="post" enctype="multipart/form-data">
+<form method="post">
     <?php if (isset($errors['root'])): ?>
         <div class="error"><?=$errors['root']?></div>
     <?php endif; ?>
@@ -12,7 +12,7 @@
             <div class="error"><?=$errors['title'][0]?></div>
         <?php endif; ?>
 
-        <input type="text" id="title" name="title">
+        <input type="text" id="title" name="title" value="<?=$post->getTitle()?>">
     </div>
 
     <div>
@@ -22,11 +22,17 @@
             <div class="error"><?=$errors['body'][0]?></div>
         <?php endif; ?>
 
-        <textarea name="body" id="body"></textarea>
+        <textarea name="body" id="body">
+            <?=$post->getBody()?>
+        </textarea>
     </div>
 
     <div>
         <label for="image">Image</label>
+
+        <?php foreach ($post->getImages() as $image): ?>
+            <img src="<?=$image?>">
+        <?php endforeach; ?>
 
         <?php if (isset($errors['image'])): ?>
             <div class="error"><?=$errors['image'][0]?></div>
@@ -35,5 +41,5 @@
         <input type="file" id="image" name="image">
     </div>
 
-    <input type="submit" value="Create Post">
+    <input type="submit" value="Edit Post">
 </form>

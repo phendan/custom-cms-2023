@@ -28,16 +28,16 @@ class Session {
     }
 
     // Sets a session once, deletes it again when looked up next
-    public static function flash(string $key, string $message = null): ?string
+    public static function flash(string $key, mixed $value = null): ?string
     {
         if (self::exists($key)) {
-            $message = self::get($key);
+            $value = self::get($key);
             self::delete($key);
 
-            return $message;
+            return $value;
         }
 
-        self::set($key, $message);
+        self::set($key, $value);
         return null;
     }
 }

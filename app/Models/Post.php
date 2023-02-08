@@ -14,7 +14,10 @@ class Post {
     private string $slug;
     private string $body;
     private string $createdAt;
+    private string $updatedAt;
     private string $userId;
+    private array $images;
+    private array $comments;
 
     public function __construct(Database $db, ?array $data = [])
     {
@@ -45,8 +48,8 @@ class Post {
     {
         $sql = "
             INSERT INTO `posts`
-            (`user_id`, `title`, `slug`, `body`, `created_at`)
-            VALUES (:userId, :title, :slug, :body, :createdAt)
+            (`user_id`, `title`, `slug`, `body`, `created_at`, `updated_at`)
+            VALUES (:userId, :title, :slug, :body, :createdAt, :updatedAt)
         ";
 
         $slug = Str::slug($title);
@@ -56,7 +59,8 @@ class Post {
             'title' => $title,
             'slug' => $slug,
             'body' => $body,
-            'createdAt' => time()
+            'createdAt' => time(),
+            'updatedAt' => time()
         ]);
 
         // If there is an image, save it
@@ -84,6 +88,30 @@ class Post {
         ]);
     }
 
+    public function edit(string $title, string $body): bool
+    {
+        $sql = "
+            UPDATE `posts`
+            SET `title` = :title, `slug` = :slug, `body` = :body, `updated_at` = :updatedAt
+            WHERE `id` = :id
+        ";
+
+        $slug = Str::slug($title);
+
+        $postData = [
+            'id' => $this->getId(),
+            'title' => $title,
+            'slug' => $slug,
+            'body' => $body,
+            'updatedAt' => time()
+        ];
+
+        $editQuery = $this->db->query($sql, $postData);
+        $this->fill($postData);
+
+        return (bool) $editQuery->count();
+    }
+
     public function delete(): bool
     {
         $images = $this->getImages();
@@ -96,6 +124,12 @@ class Post {
         $deleteQuery = $this->db->query($sql, [ 'id' => $this->getId() ]);
 
         return (bool) $deleteQuery->count();
+    }
+
+    public function addComment(int $userId, string $body)
+    {
+        $comment = new Comment($this->db);
+        $comment->create($this->getId(), $userId, $body);
     }
 
     public function getId(): int
@@ -138,13 +172,35 @@ class Post {
 
     public function getImages(): array
     {
+        if (isset($this->images)) {
+            return $this->images;
+        }
+
         $sql = "SELECT `path` FROM `posts_images` WHERE `post_id` = :postId";
         $imagesQuery = $this->db->query($sql, [ 'postId' => $this->getId() ]);
 
-        $images = array_map(function ($image) {
+        $this->images = array_map(function ($image) {
             return DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . $image['path'];
         }, $imagesQuery->results());
 
-        return $images;
+        return $this->images;
+    }
+
+    public function getComments(): array
+    {
+        if (isset($this->comments)) {
+            return $this->comments;
+        }
+
+        $sql = "SELECT * FROM `post_comments` WHERE `post_id` = :postId";
+        $commentsQuery = $this->db->query($sql, [ 'postId' => $this->getId() ]);
+
+        $this->comments = array_map(function($commentData) {
+            $comment = new Comment($this->db);
+            $comment->fill($commentData);
+            return $comment;
+        }, $commentsQuery->results());
+
+        return $this->comments;
     }
 }

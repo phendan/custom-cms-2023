@@ -18,8 +18,9 @@ class BaseController {
         $this->view = new View($this->user);
     }
 
-    protected function redirectTo(string $path)
+    protected function redirectTo(string $path, int $statusCode = 200)
     {
+        http_response_code($statusCode);
         header('Location: ' . $path);
         exit();
     }

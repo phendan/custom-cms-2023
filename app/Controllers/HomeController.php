@@ -13,8 +13,6 @@ class HomeController extends BaseController {
             $this->user->find($this->user->getId());
         }
 
-        $this->view->render('home/index', [
-            'user' => $this->user
-        ]);
+        $this->view->render('home/index');
     }
 }

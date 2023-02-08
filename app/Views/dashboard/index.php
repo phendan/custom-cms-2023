@@ -22,6 +22,7 @@ Hallo, <?=$user->getUsername()?>
             <a href="/post/<?=$post->getId()?>/<?=$post->getSlug()?>">
                 <?php echo $post->getTitle(); ?>
             </a>
+            <a href="/post/edit/<?=$post->getId()?>/<?=$post->getSlug()?>">Edit Post</a>
             <a href="/post/delete/<?=$post->getId()?>">Delete Post</a>
         </div>
     <?php endforeach; ?>
