@@ -3,9 +3,7 @@
 namespace App\Controllers;
 
 use App\BaseController;
-use App\Models\FormValidation;
-use App\Models\Database;
-use App\Models\User;
+use App\Models\{FormValidation, User};
 use App\Helpers\Session;
 use Exception;
 use App\Request;

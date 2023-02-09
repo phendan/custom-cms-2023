@@ -5,8 +5,6 @@ namespace App\Controllers;
 use App\BaseController;
 use App\Helpers\Session;
 use App\Models\FormValidation;
-use App\Models\Database;
-use App\Models\User;
 use Exception;
 use App\Request;
 

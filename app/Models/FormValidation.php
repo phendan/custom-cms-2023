@@ -6,17 +6,12 @@ use App\Models\Database;
 use Exception;
 
 class FormValidation {
-    private Database $db;
-    private array $formInput;
     private array $rules;
     private array $errors = [];
     private array $messages = [];
 
-    public function __construct(array $formInput, Database $db)
-    {
-        $this->db = $db;
-        $this->formInput = $formInput;
-    }
+    public function __construct(private array $formInput, private Database $db)
+    {}
 
     public function setRules(array $rules): void
     {

@@ -1,6 +1,6 @@
 <h1>Login</h1>
 
-<form action="index.php?url=login" method="post">
+<form method="post">
     <div>
         <label for="username">Username</label>
 

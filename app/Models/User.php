@@ -5,19 +5,19 @@ namespace App\Models;
 use App\Models\Database;
 use Exception;
 use App\Helpers\Session;
+use App\Traits\Fillable;
 
 class User {
-    private Database $db;
+    use Fillable;
+
     private string $id;
     private string $username;
     private string $email;
     private string $password;
     private string $joinedAt;
 
-    public function __construct(Database $db)
-    {
-        $this->db = $db;
-    }
+    public function __construct(private Database $db)
+    {}
 
     // Returns a boolean indicating if the user could be found
     // If they were, saves their information in object's properties
@@ -33,9 +33,7 @@ class User {
 
         $userData = $userQuery->results()[0];
 
-        foreach ($userData as $column => $value) {
-            $this->{$column} = $value;
-        }
+        $this->fill($userData);
 
         return true;
     }

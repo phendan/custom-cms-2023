@@ -5,6 +5,15 @@
 <?php endforeach; ?>
 <div>Posted at: <?=$post->getCreatedAt()?></div>
 <div>Posted by: <?=$post->getUser()->getUsername()?></div>
+<div>Likes: <?=$post->getTotalLikes()?></div>
+
+<?php if ($user->isLoggedIn()): ?>
+    <?php if ($post->isLikedBy($user->getId())): ?>
+        <a href="/post/dislike/<?=$post->getId()?>">Dislike</a>
+    <?php else: ?>
+        <a href="/post/like/<?=$post->getId()?>">Like</a>
+    <?php endif; ?>
+<?php endif; ?>
 
 <?php if ($user->isLoggedIn() && ($user->getId() === $post->getUserId())): ?>
     <a href="/post/delete/<?=$post->getId()?>">Delete This Post</a>
@@ -12,6 +21,14 @@
 
 <h2>Submit Your Comment</h2>
 <form method="post" action="/comment/create/?postId=<?=$post->getId()?>">
+    <?php if (isset($commentErrors)): ?>
+        <?php foreach ($commentErrors as $error): ?>
+            <div class="error">
+                <?=$error[0]?>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
     <div><textarea name="body"></textarea></div>
 
     <input type="submit" value="Submit Comment">

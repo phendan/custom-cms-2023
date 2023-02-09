@@ -5,10 +5,8 @@ namespace App\Controllers;
 use App\BaseController;
 use App\Helpers\Session;
 use App\Request;
-use App\Models\FormValidation;
 use Exception;
-use App\Models\Post;
-use App\Models\FileValidation;
+use App\Models\{FormValidation, FileValidation, Post};
 
 class PostController extends BaseController {
     // Detail Page
@@ -29,6 +27,7 @@ class PostController extends BaseController {
         }
 
         $this->view->render('posts/index', [
+            'commentErrors' => Session::flash('commentErrors'),
             'post' => $post
         ]);
     }
@@ -138,7 +137,7 @@ class PostController extends BaseController {
 
         if (!$this->user->isLoggedIn() || $this->user->getId() !== $post->getUserId()) {
             Session::flash('error', 'You do not have permission to edit this post.');
-            $this->redirectTo('/dashboard');
+            $this->redirectTo('/login');
         }
 
         if ($request->getMethod() !== 'POST') {
@@ -176,6 +175,59 @@ class PostController extends BaseController {
         }
 
         Session::flash('success', 'The post has been successfully updated.');
+        $this->redirectTo("/post/{$post->getId()}/{$post->getSlug()}");
+    }
+
+    public function like(Request $request)
+    {
+        if (!isset($request->getInput('page')[0])) {
+            Session::flash('error', 'You must access this page via a link.');
+            $this->redirectTo('/dashboard');
+        }
+
+        $id = $request->getInput('page')[0];
+
+        $post = new Post($this->db);
+
+        if (!$post->find($id)) {
+            Session::flash('error', 'This post does not exist');
+            $this->redirectTo('/dashboard', 404);
+        }
+
+        if (!$this->user->isLoggedIn()) {
+            Session::flash('error', 'You must be signed in to like this post.');
+            $this->redirectTo('/login');
+        }
+
+        if (!$post->like($this->user->getId())) {
+            Session::flash('error', "You've already liked this post");
+        }
+
+        $this->redirectTo("/post/{$post->getId()}/{$post->getSlug()}");
+    }
+
+    public function dislike(Request $request)
+    {
+        if (!isset($request->getInput('page')[0])) {
+            Session::flash('error', 'You must access this page via a link.');
+            $this->redirectTo('/dashboard');
+        }
+
+        $id = $request->getInput('page')[0];
+
+        $post = new Post($this->db);
+
+        if (!$post->find($id)) {
+            Session::flash('error', 'This post does not exist');
+            $this->redirectTo('/dashboard', 404);
+        }
+
+        if (!$this->user->isLoggedIn()) {
+            Session::flash('error', 'You must be signed in to like this post.');
+            $this->redirectTo('/login');
+        }
+
+        $post->dislike($this->user->getId());
         $this->redirectTo("/post/{$post->getId()}/{$post->getSlug()}");
     }
 }

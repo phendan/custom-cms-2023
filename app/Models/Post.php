@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Exception;
 use App\Models;
 use App\Helpers\Str;
 use App\Models\Database;
 use App\Models\FileStorage;
+use App\Traits\Fillable;
 
 class Post {
-    private Database $db;
+    use Fillable;
+
     private string $id;
     private string $title;
     private string $slug;
@@ -19,16 +22,9 @@ class Post {
     private array $images;
     private array $comments;
 
-    public function __construct(Database $db, ?array $data = [])
+    public function __construct(private Database $db, ?array $data = [])
     {
-        $this->db = $db;
         $this->fill($data);
-    }
-
-    public function fill(array $data = []) {
-        foreach ($data as $field => $value) {
-            $this->{Str::toCamelCase($field)} = $value;
-        }
     }
 
     public function find(int $identifier): bool
@@ -130,6 +126,60 @@ class Post {
     {
         $comment = new Comment($this->db);
         $comment->create($this->getId(), $userId, $body);
+    }
+
+    public function like(int $userId): bool
+    {
+        $sql = "
+            INSERT INTO `post_likes`
+            (`user_id`, `post_id`, `created_at`)
+            VALUES (:userId, :postId, :createdAt)
+        ";
+
+        try {
+            $likeQuery = $this->db->query($sql, [
+                'userId' => $userId,
+                'postId' => $this->getId(),
+                'createdAt' => time()
+            ]);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return (bool) $likeQuery->count();
+    }
+
+    public function dislike(int $userId): bool
+    {
+        $sql = "DELETE FROM `post_likes` WHERE `post_id` = :postId AND `user_id` = :userId";
+
+        $dislikeQuery = $this->db->query($sql, [
+            'userId' => $userId,
+            'postId' => $this->getId()
+        ]);
+
+        return (bool) $dislikeQuery->count();
+    }
+
+    public function isLikedBy(int $userId): bool
+    {
+        $sql = "SELECT 1 FROM `post_likes` WHERE `post_id` = :postId AND `user_id` = :userId";
+
+        $likeQuery = $this->db->query($sql, [
+            'postId' => $this->getId(),
+            'userId' => $userId
+        ]);
+
+        return (bool) $likeQuery->count();
+    }
+
+    public function getTotalLikes(): int
+    {
+        $sql = "SELECT COUNT(`id`) as like_count FROM `post_likes` WHERE `post_id` = :postId";
+
+        $likesQuery = $this->db->query($sql, [ 'postId' => $this->getId() ]);
+
+        return (int) $likesQuery->first()['like_count'];
     }
 
     public function getId(): int

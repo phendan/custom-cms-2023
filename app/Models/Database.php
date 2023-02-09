@@ -47,4 +47,14 @@ class Database {
     {
         return $this->statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function first(): array
+    {
+        return $this->results()[0];
+    }
+
+    public function last(): array
+    {
+        return end($this->results());
+    }
 }

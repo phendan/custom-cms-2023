@@ -14,12 +14,9 @@ class Comment {
     private string $updatedAt;
 
     private User $user;
-    private Database $db;
 
-    public function __construct(Database $db)
-    {
-        $this->db = $db;
-    }
+    public function __construct(private Database $db)
+    {}
 
     public function fill(array $data = []) {
         foreach ($data as $field => $value) {

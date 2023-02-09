@@ -3,14 +3,13 @@
 namespace App\Controllers;
 
 use App\BaseController;
+use App\Traits\RouteGuards\UserOnly;
 
 class DashboardController extends BaseController {
+    use UserOnly;
+
     public function index()
     {
-        if (!$this->user->isLoggedIn()) {
-            $this->redirectTo('/login');
-        }
-
         $this->user->find($this->user->getId());
 
         $posts = $this->user->getPosts();
@@ -18,5 +17,10 @@ class DashboardController extends BaseController {
         $this->view->render('dashboard/index', [
             'posts' => $posts
         ]);
+    }
+
+    public function settings()
+    {
+        //
     }
 }

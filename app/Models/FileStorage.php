@@ -6,14 +6,12 @@ use Exception;
 use App\Helpers\Str;
 
 class FileStorage {
-    private array $file;
     private string $extension;
     private string $currentLocation;
     private string $generatedName;
 
-    public function __construct(array $file)
+    public function __construct(private array $file)
     {
-        $this->file = $file;
         $this->extension = strtolower(pathinfo($this->file['name'], PATHINFO_EXTENSION));
         $this->currentLocation = $this->file['tmp_name'];
         $this->generatedName = Str::token() . '.' . $this->extension;

@@ -5,7 +5,6 @@ namespace App\Models;
 use Exception;
 
 class FileValidation {
-    private array $inputFiles;
     private array $rules;
     private array $errors = [];
     private $allowedTypes = [
@@ -16,10 +15,8 @@ class FileValidation {
         ]
     ];
 
-    public function __construct(array $files)
-    {
-        $this->inputFiles = $files;
-    }
+    public function __construct(private array $inputFiles)
+    {}
 
     public function setRules(array $rules): void
     {

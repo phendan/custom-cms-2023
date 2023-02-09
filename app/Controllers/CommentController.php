@@ -4,9 +4,8 @@ namespace App\Controllers;
 
 use App\BaseController;
 use App\Request;
-use App\Models\Post;
+use App\Models\{FormValidation, Post};
 use App\Helpers\Session;
-use App\Models\FormValidation;
 
 class CommentController extends BaseController {
     public function create(Request $request) {
@@ -35,6 +34,8 @@ class CommentController extends BaseController {
         $validation->setRules([
             'body' => 'required|min:25'
         ]);
+
+        $validation->validate();
 
         if ($validation->fails()) {
             Session::flash('commentErrors', $validation->getErrors());
