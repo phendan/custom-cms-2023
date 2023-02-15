@@ -33,4 +33,14 @@ class Str {
 
         return $subject;
     }
+
+    public static function toHeaderCase(string $subject)
+    {
+        $subject = str_replace('HTTP_', '', $subject);
+        $subject = strtolower($subject);
+        $subject = ucwords($subject, '_');
+        $subject = str_replace('_', '-', $subject);
+
+        return $subject;
+    }
 }

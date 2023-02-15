@@ -15,14 +15,15 @@ class LoginController extends BaseController {
             $this->redirectTo('/');
         }
 
-        if ($request->getMethod() === 'GET') {
+        // if ($request->getMethod() === 'GET') {
+        if (!$request->expectsJson()) {
             $this->view->render('login/index');
             return;
         }
 
         // POST
         // Input Validieren
-        $formInput = $request->getInput('post');
+        $formInput = $request->getInput('json');
         $validation = new FormValidation($formInput, $this->db);
 
         $validation->setRules([
@@ -33,7 +34,7 @@ class LoginController extends BaseController {
         $validation->validate();
 
         if ($validation->fails()) {
-            $this->view->render('login/index', [
+            $this->view->json(422, [
                 'errors' => $validation->getErrors()
             ]);
         }
@@ -42,9 +43,9 @@ class LoginController extends BaseController {
         try {
             $this->user->login($formInput['username'], $formInput['password']);
             Session::flash('success', 'You have been successfully signed in.');
-            $this->redirectTo('/dashboard');
+            $this->view->json(200);
         } catch (Exception $e) {
-            $this->view->render('login/index', [
+            $this->view->json(422, [
                 'errors' => [
                     'root' => [$e->getMessage()]
                 ]

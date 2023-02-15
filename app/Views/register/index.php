@@ -21,11 +21,11 @@ if (isset($errors)) {
     </div>
     <div>
         <label for="password">Password</label>
-        <input type="password" name="password" id="password" />
+        <input type="password" name="password" id="password" autocomplete="new-password" />
     </div>
     <div>
         <label for="password-again">Repeat Password</label>
-        <input type="password" name="passwordAgain" id="password-again" />
+        <input type="password" name="passwordAgain" id="password-again" autocomplete="new-password" />
     </div>
 
     <input type="submit" />

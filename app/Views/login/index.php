@@ -1,6 +1,6 @@
 <h1>Login</h1>
 
-<form method="post">
+<form method="post" class="login-form">
     <div>
         <label for="username">Username</label>
 
@@ -8,7 +8,7 @@
             <div class="error"><?= $errors['username'][0] ?></div>
         <?php endif; ?>
 
-        <input type="text" name="username" id="username" placeholder="Your Handle" />
+        <input type="text" name="username" id="username" placeholder="Your Handle" autocomplete="username" />
     </div>
     <div>
         <label for="password">Password</label>
@@ -17,7 +17,7 @@
             <div class="error"><?= $errors['password'][0] ?></div>
         <?php endif; ?>
 
-        <input type="password" name="password" id="password" />
+        <input type="password" name="password" id="password" autocomplete="current-password" />
     </div>
 
     <input type="submit" />
