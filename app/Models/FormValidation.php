@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Database;
 use Exception;
+use App\Helpers\Session;
 
 class FormValidation {
     private array $rules;
@@ -25,6 +26,13 @@ class FormValidation {
 
     public function validate(): void
     {
+        try {
+            $this->csrfToken();
+        } catch (Exception $e) {
+            $this->errors['root'][] = $e->getMessage();
+            return;
+        }
+
         foreach ($this->rules as $field => $fieldRules) {
             $fieldRules = explode('|', $fieldRules);
 
@@ -92,6 +100,13 @@ class FormValidation {
     private function fieldExists(string $field): bool
     {
         return isset($this->formInput[$field]) && !empty($this->formInput[$field]);
+    }
+
+    private function csrfToken()
+    {
+        if (!isset($this->formInput['csrfToken']) || Session::get('csrfToken') !== $this->formInput['csrfToken']) {
+            throw new Exception("The form request could not be validated.");
+        }
     }
 
     private function required(string $field) {

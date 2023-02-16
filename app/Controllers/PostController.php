@@ -92,6 +92,13 @@ class PostController extends BaseController {
 
     public function delete(Request $request)
     {
+        $getInput = $request->getInput('get');
+
+        if (!isset($getInput['csrfToken']) || $getInput['csrfToken'] !== Session::get('csrfToken')) {
+            Session::flash('error', 'This request did not seem intentional.');
+            $this->redirectTo('/dashboard');
+        }
+
         if (!isset($request->getInput('page')[0])) {
             Session::flash('error', 'The page you were trying to access does not exist.');
             $this->redirectTo('/dashboard');

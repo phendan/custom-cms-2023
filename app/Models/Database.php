@@ -16,6 +16,8 @@ class Database {
     private PDO $pdo;
     private PDOStatement $statement;
 
+    private string $table;
+
     public function __construct()
     {
         try {
@@ -34,6 +36,20 @@ class Database {
     {
         $this->statement = $this->pdo->prepare($sql);
         $this->statement->execute($values);
+
+        return $this;
+    }
+
+    public function table(string $table)
+    {
+        $this->table = $table;
+
+        return $this;
+    }
+
+    public function where(string $column, string $operator, string|int $value)
+    {
+        $this->query("SELECT * FROM {$this->table} WHERE {$column} {$operator} :value", [ 'value' => $value ]);
 
         return $this;
     }

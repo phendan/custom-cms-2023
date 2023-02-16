@@ -1,6 +1,8 @@
 <h1>Login</h1>
 
 <form method="post" class="login-form">
+    <input type="hidden" name="csrfToken" value="<?=$csrfToken?>" id="csrfToken">
+
     <div>
         <label for="username">Username</label>
 

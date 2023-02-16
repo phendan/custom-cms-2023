@@ -24,8 +24,10 @@ class User {
     public function find(int|string $identifier): bool
     {
         $column = is_int($identifier) ? 'id' : 'username';
-        $sql = "SELECT * FROM `users` WHERE `{$column}` = :identifier";
-        $userQuery = $this->db->query($sql, [ 'identifier' => $identifier ]);
+        // $sql = "SELECT * FROM `users` WHERE `{$column}` = :identifier";
+        // $userQuery = $this->db->query($sql, [ 'identifier' => $identifier ]);
+
+        $userQuery = $this->db->table('users')->where($column, '=', $identifier);
 
         if (!$userQuery->count()) {
             return false;

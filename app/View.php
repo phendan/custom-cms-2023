@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Helpers\Session;
+use App\Helpers\{Session, CSRFProtection};
 use App\Models\User;
 
 class View {
@@ -19,6 +19,7 @@ class View {
 
         $user = $this->user;
         $session = Session::class;
+        $csrfToken = CSRFProtection::token();
 
         extract($data);
 

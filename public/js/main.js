@@ -29,12 +29,14 @@ const http = {
 form?.addEventListener('submit', async event => {
     event.preventDefault()
 
+    const csrfToken = document.querySelector('#csrfToken')?.value
     const username = document.querySelector('#username')?.value
     const password = document.querySelector('#password')?.value
 
     // Client Side Validation
 
     const data = {
+        csrfToken,
         username,
         password
     }
@@ -47,6 +49,30 @@ form?.addEventListener('submit', async event => {
             return
         }
 
-        console.log(exception.data.errors)
+        clearErrors()
+        handleErrors(exception.data.errors)
     }
 })
+
+function handleErrors(errors) {
+    // for (let field in errors) {
+    //     const messages = errors[field]
+
+    //     console.log(field, messages)
+    // }
+
+    for (let [field, messages] of Object.entries(errors)) {
+        const element =
+            document.querySelector(`#${field}`) ?? document.querySelector('form')
+        element.insertAdjacentHTML(
+            'beforebegin',
+            `<div class="error">${messages[0]}</div>`
+        )
+    }
+}
+
+function clearErrors() {
+    document.querySelectorAll('.error').forEach(element => {
+        element.remove()
+    })
+}

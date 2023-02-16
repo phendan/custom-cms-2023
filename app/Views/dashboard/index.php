@@ -23,7 +23,7 @@ Hallo, <?=$user->getUsername()?>
                 <?php echo $post->getTitle(); ?>
             </a>
             <a href="/post/edit/<?=$post->getId()?>/<?=$post->getSlug()?>">Edit Post</a>
-            <a href="/post/delete/<?=$post->getId()?>">Delete Post</a>
+            <a href="/post/delete/<?=$post->getId()?>?csrfToken=<?=$csrfToken?>">Delete Post</a>
         </div>
     <?php endforeach; ?>
 </div>
